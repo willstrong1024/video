@@ -5,7 +5,7 @@ import json, os, praw, sys
 if len(sys.argv) != 2:
     exit()
 
-with open("config/config.json", "r") as f:
+with open("config/reddit.json", "r") as f:
     config = json.load(f)
 
 reddit = praw.Reddit(client_id=config['id'],
