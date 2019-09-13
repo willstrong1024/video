@@ -33,4 +33,4 @@ for i, post in enumerate(reddit.subreddit(subreddit).top(time_filter="day", limi
         f.write(post.id)
 
     with open(directory + "/url", "w") as f:
-        f.write(post.url)
+        f.write("https://www.reddit.com" + post.permalink)

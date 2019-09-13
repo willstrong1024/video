@@ -30,7 +30,7 @@ tts() {
 
 	i=0
 	for f in $1; do
-		input=$(sed "s/'/\\\'/g" "${f}" | sed 's/"/\\\"/g' | sed "s/*//g" | tr '\n' ' ')
+		input=$(sed "s/'/\\\'/g" "${f}" | sed 's/"/\\\"/g' | sed "s/*//g" | sed 's/\!\{0,1\}\[[^]]*\]([^)]*)//g' | \tr '\n' ' ')
 		IFS=$'\n' tmp=$(echo ${input} | fold -s -w5000)
 
 		j=0
@@ -46,7 +46,7 @@ tts() {
 	done
 }
 
-mkdir /tmp/video/audio
+mkdir -p /tmp/video/audio
 
 tts "/tmp/video/posts/*/body"
 tts "/tmp/video/posts/*/head"

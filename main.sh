@@ -2,17 +2,25 @@
 
 colours=(red green blue magenta)
 subreddits=(entitledparents AmItheAsshole tifu MaliciousCompliance)
-
 index=$((RANDOM%=${#subreddits[@]}))
 
-mkdir /tmp/video
+mkdir -p /tmp/video
+cd ~/video
 
 ./posts.py ${subreddits[${index}]}
 ./tts.sh
 ./images.sh
 ./videos.sh
 
-title="r/$(cat /tmp/video/posts/name) $(cat /tmp/video/posts/post0/head)"
+for f in /tmp/video/posts/post*/head; do
+	title="r/$(cat /tmp/video/posts/name) $(cat ${f})"
+	length=$(echo ${title} | wc -c)
+
+	if [ ${length} -le 100 ]; then
+		break
+	fi
+done
+
 convert -background black \
 	-size 1280x180 -fill ${colours[${index}]} label:"r/$(cat /tmp/video/posts/name)" \
 	-size 1280x540 -fill white caption:"$(cat /tmp/video/posts/post0/head)" \
