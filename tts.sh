@@ -46,7 +46,7 @@ tts() {
 	done
 }
 
-mkdir -p /tmp/video/audio
+mkdir /tmp/video/audio
 
 tts "/tmp/video/posts/*/body"
 tts "/tmp/video/posts/*/head"

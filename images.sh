@@ -1,6 +1,6 @@
 #!/bin/bash
 
-mkdir -p /tmp/video/images
+mkdir /tmp/video/images
 
 i=0
 for post in /tmp/video/posts/post*; do

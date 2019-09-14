@@ -1,11 +1,13 @@
 #!/bin/bash
 
+export GOOGLE_APPLICATION_CREDENTIALS=/home/william/video/config/video-156cb70d2b07.json
+
 colours=(red green blue magenta)
 subreddits=(entitledparents AmItheAsshole tifu MaliciousCompliance)
 index=$((RANDOM%=${#subreddits[@]}))
 
-mkdir -p /tmp/video
-cd ~/video
+mkdir /tmp/video
+cd /home/william/video
 
 ./posts.py ${subreddits[${index}]}
 ./tts.sh
