@@ -28,8 +28,6 @@ convert -background black \
 	-size 1280x540 -fill white caption:"$(cat /tmp/video/posts/post0/head)" \
 	-append /tmp/video/youtube/thumbnail.png
 
-./upload.py --file /tmp/video/youtube/video.mp4 --title "${title}" --description "${title}" --category 24
-./thumbnail.py --video-id "$(cat /tmp/video/youtube/id)" --file /tmp/video/youtube/thumbnail.png
-./like.py --video-id "$(cat /tmp/video/youtube/id)"
+./upload.py --file /tmp/video/youtube/video.mp4 --title "${title}" --description "${title}" --category 24 --thumbnail /tmp/video/youtube/thumbnail.png
 
 rm -rf /tmp/video

@@ -14,7 +14,6 @@ from oauth2client.client import flow_from_clientsecrets
 from oauth2client.file import Storage
 from oauth2client.tools import argparser, run_flow
 
-
 httplib2.RETRIES = 1
 MAX_RETRIES = 10
 
@@ -26,7 +25,7 @@ RETRIABLE_STATUS_CODES = [500, 502, 503, 504]
 
 CLIENT_SECRETS_FILE = "config/client_secrets.json"
 
-YOUTUBE_UPLOAD_SCOPE = "https://www.googleapis.com/auth/youtube.upload"
+YOUTUBE_UPLOAD_SCOPE = "https://www.googleapis.com/auth/youtube"
 YOUTUBE_API_SERVICE_NAME = "youtube"
 YOUTUBE_API_VERSION = "v3"
 
@@ -47,6 +46,7 @@ https://developers.google.com/api-client-library/python/guide/aaa_client_secrets
     CLIENT_SECRETS_FILE))
 
 VALID_PRIVACY_STATUSES = ("public", "private", "unlisted")
+video_id = None
 
 def get_authenticated_service(args):
     flow = flow_from_clientsecrets(CLIENT_SECRETS_FILE,
@@ -87,6 +87,12 @@ def initialize_upload(youtube, options):
 
     resumable_upload(insert_request)
 
+def like_video(youtube):
+    youtube.videos().rate(
+        id=video_id,
+        rating="like"
+    ).execute()
+
 def resumable_upload(insert_request):
     response = None
     error = None
@@ -97,10 +103,10 @@ def resumable_upload(insert_request):
             print("Uploading file...")
             status, response = insert_request.next_chunk()
             if 'id' in response:
-                with open("/tmp/video/youtube/id", "w") as f:
-                    f.write(response['id'])
+                global video_id
+                video_id = response['id']
 
-                print("Video id '%s' was successfully uploaded." % response['id'])
+                print("Video id '%s' was successfully uploaded." % video_id)
             else:
                 exit("The upload failed with an unexpected response: %s" % response)
         except HttpError as e:
@@ -123,8 +129,16 @@ def resumable_upload(insert_request):
             print("Sleeping %f seconds and then retrying..." % sleep_seconds)
             time.sleep(sleep_seconds)
 
+def upload_thumbnail(youtube, options):
+    youtube.thumbnails().set(
+        videoId=video_id,
+        media_body=options.thumbnail
+    ).execute()
+
 if __name__ == '__main__':
     argparser.add_argument("--file", required=True, help="Video file to upload")
+    argparser.add_argument("--thumbnail", required=True,
+        help="Thumbnail file to upload")
     argparser.add_argument("--title", help="Video title", default="Test Title")
     argparser.add_argument("--description", help="Video description",
         default="Test Description")
@@ -144,5 +158,7 @@ if __name__ == '__main__':
 
     try:
         initialize_upload(youtube, args)
+        upload_thumbnail(youtube, args)
+        like_video(youtube)
     except HttpError as e:
         print("An HTTP error %d occurred:\n%s" % (e.resp.status, e.content))
